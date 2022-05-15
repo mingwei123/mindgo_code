@@ -1,5 +1,12 @@
 import datetime
 
+"""
+待优化点：
+1. 买入的基准价格
+2. 每一格的份额
+3. 根据不同的价格设定流动性交易还是价值交易
+4. start_p价格暗时间递增要细一点，最好也按照每天*年化6去递增
+"""
 #初始化账户
 def init(context):
     g.stock='510050.OF'
@@ -33,9 +40,13 @@ def handle_bar(context,bar_dict):
         g.start_year = int(day_str)
     
     end_date = get_datetime() + datetime.timedelta(days=1)
-    df = get_price(securities='510050.OF', start_date=get_datetime(),end_date =get_datetime(),  fre_step='1m', fields=['close'])
+    # df = get_price(securities='510050.OF', start_date=get_datetime(),end_date =get_datetime(),  fre_step='1m', fields=['close'])
     
-    for p in df["close"]:
+    df = history(g.stock, ['open'] , 1, '1m', False, 'pre', is_panel=0)
+    # log.info('开盘价：'+ str(df["open"]))    
+    
+    # for p in df["close"]:
+    for p in df["open"].values:
         if g.init == 0:
             if p < g.start_price:
                 order(g.stock, 17000)
